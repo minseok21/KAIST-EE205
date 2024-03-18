@@ -1,0 +1,51 @@
+EE205 Project 4 readme 20190004 Minseok Kang
+
+1. Explain the data structure you chose to implement and the overall algorithm
+
+1) Bellman-Ford Algorithm
+
+# Data Sturctures
+(1) 2D Array `graph`: This array represents the graph, where `graph[u][v]` stores the weight of the edge from vertex `u` to vertex `v`. If there is no edge, it stores `INFINITY`. It is initialized based on the input graph, and its size is `(V+1) x (V+1)` to accommodate `V` vertices (considering 1-based indexing).
+(2) 1D Arrays `A_i` and `A_f`: These arrays are used to store the shortest path distances from the source vertex to all other vertices. `A_i` represents the distances calculated in the previous iteration, while `A_f` stores the updated distances in the current iteration. Each has a size of `(V+1)` to hold distances for `V` vertices.
+(3) 1D Array `B`: This array is used to reconstruct the shortest paths. `B[v]` stores the predecessor of vertex `v` in the shortest path from the source vertex `s` to `v`.
+
+# Overall Algorithm
+(1) Initialization: The algorithm starts by initializing distances to `INFINITY` for all vertices except the source vertex, which is set to 0. The predecessor array `B` is also initialized.
+(2) Relaxation: In each iteration, the algorithm relaxes the edges. For every vertex `v`, it checks whether the shortest path to `v` can be improved by going through another vertex `w`. If so, it updates `A_f[v]` and sets `B[v]` to `w`. The `stable` flag is used to check if any update happens in the current iteration.
+(3) Early Stopping: If no update occurs in an iteration (i.e., `stable` remains `TRUE`), the algorithm concludes that no further improvements are possible and prints the shortest paths and their lengths.
+(4) Negative Cycle Detection: If the algorithm does not terminate after `V` iterations, it indicates the presence of a negative-weight cycle in the graph, and an error message is printed.
+(5) Path Reconstruction: The `print_path` function recursively reconstructs and prints the shortest path from the source to a given vertex using the predecessor array `B`.
+
+This implementation effectively computes the shortest paths from a single source to all other vertices in a graph, handling negative weight edges and detecting negative cycles by using the dynamic programming. It also provides the functionality to reconstruct and print the shortest paths.
+
+
+2) Floyd-Warshall Algorithm
+
+# Data Sturctures
+(1) 2D Array `graph`: This array stores the input graph's weighted adjacency matrix, where `graph[v][w]` holds the weight of the edge from vertex `v` to vertex `w`. If there is no direct edge between `v` and `w`, the value is set to `INFINITY`. This array is used to initialize the algorithm.
+(2) 2D Arrays `A_i` and `A_f`: These are dynamic 2D arrays used to calculate and store the shortest path lengths between every pair of vertices. `A_i` holds the shortest path lengths considering the first `i-1` vertices as intermediate vertices, and `A_f` is used to compute the next iteration. After each iteration, `A_i` is updated with the values from `A_f`.
+(3) 2D Array `B`: This array is used to reconstruct the shortest paths. `B[v][w]` stores the predecessor of `w` on the shortest path from `v` to `w`. This information is used by the `print_path` function to print the actual path between any two vertices.
+
+# Overall Algorithm
+(1) Initialization: The algorithm initializes `A_i` with the input graph's weights and `B` with corresponding predecessors. For diagonal elements (where `v` equals `w`), the distance is set to 0, and the predecessor is set to -1 (no predecessor).
+(2) Main Loop: The algorithm iteratively updates the shortest path lengths. For each pair of vertices `(v, w)`, it checks whether a path through an intermediate vertex `i` is shorter than the current known shortest path. If it is, it updates `A_f[v][w]` with this shorter distance and updates `B[v][w]` with the predecessor from the intermediate path.
+(3) Path Length and Reconstruction: After completing the iterations, the algorithm checks for negative-cost cycles (indicated by negative values on the diagonal of `A_f`). If none are found, it prints the shortest path lengths and paths for each pair of vertices using `A_f` and `B`.
+
+My implementation effectively computes the shortest paths between all pairs of vertices in a graph and handles path reconstruction using the dynamic programming. It also checks for the presence of negative-cost cycles in the graph.
+
+
+2. I did the performance test with provided input files. I used the command time "./bf < input_2.txt > /dev/null" to compute it. Below are the results.
+
+1) input_1.txt
+bf.c 0m0.183s
+fw.c 0m0.049s
+
+2) input_2.txt
+bf.c  1m28.956s
+fw.c  0m31.789s
+
+3) input_3.txt
+bf.c 2m17.706s
+fw.c 0m31.206s
+
+I could find out that the result of the Floyd-Warshall Algorithm is much faster than the Bellman-Ford Algorithm.
